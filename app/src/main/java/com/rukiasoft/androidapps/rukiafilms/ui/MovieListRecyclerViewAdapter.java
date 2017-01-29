@@ -23,6 +23,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -44,7 +45,6 @@ public class MovieListRecyclerViewAdapter extends RecyclerView.Adapter<MovieList
     private final List<MovieData> mItems;
     private OnCardClickListener onCardClickListener;
     private final Context mContext;
-    private View frontCard = null;
 
 
     public MovieListRecyclerViewAdapter(Context context, List<MovieData> items) {
@@ -100,7 +100,7 @@ public class MovieListRecyclerViewAdapter extends RecyclerView.Adapter<MovieList
     protected static class MovieViewHolder extends RecyclerView.ViewHolder {
         public @BindView(R.id.movie_pic_cardview) ImageView movieThumbnail;
         public @BindView(R.id.cardview_movie_item)
-        CardView cardView;
+        FrameLayout cardView;
         private Unbinder unbinder;
 
         public MovieViewHolder(View itemView) {
@@ -113,7 +113,7 @@ public class MovieListRecyclerViewAdapter extends RecyclerView.Adapter<MovieList
             Glide.with(mContext)
                     .load(RukiaFilmsConstants.IMAGE_BASE_PATH + RukiaFilmsConstants.IMAGE_DIMEN +
                         item.getPosterPath())
-                    .centerCrop()
+                    .fitCenter()
                     .signature(new MediaStoreSignature(RukiaFilmsConstants.MIME_TYPE_PICTURE, 1, 0))
                     .error(R.drawable.splash_background)
                     .into(movieThumbnail);

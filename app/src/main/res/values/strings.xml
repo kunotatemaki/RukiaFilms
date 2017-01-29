@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">RukiaFilms</string>
     <string name="action_settings">Settings</string>
+    <string name="menu_popularity">Most popular</string>
+    <string name="menu_top_rated">Top Rated</string>
 
     <string name="movie_url" translatable="false">http://api.themoviedb.org/3/movie/</string>
     <string name="default_movie">Movie poster</string>
@@ -8,4 +10,6 @@
 
     <string name="fastscroller_track" translatable="false">FastScroller track</string>
     <string name="fastscroller_handle" translatable="false">FastScroller handle</string>
+
+    <string name="movies">%1$d movies</string>
 </resources>

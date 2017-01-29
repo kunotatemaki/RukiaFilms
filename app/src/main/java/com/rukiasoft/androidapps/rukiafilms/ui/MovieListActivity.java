@@ -1,20 +1,16 @@
 package com.rukiasoft.androidapps.rukiafilms.ui;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.rukiasoft.androidapps.rukiafilms.R;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class MovieListActivity extends AppCompatActivity {
+public class MovieListActivity extends ToolbarAndProgressActivity {
 
-    @BindView(R.id.toolbar) Toolbar toolbar;
     private Unbinder unbinder;
 
     @Override
@@ -22,14 +18,13 @@ public class MovieListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
         unbinder = ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_movie_lit, menu);
+        getMenuInflater().inflate(R.menu.menu_movie_list, menu);
         return true;
     }
 
