@@ -3,4 +3,9 @@
     <string name="action_settings">Settings</string>
 
     <string name="movie_url" translatable="false">http://api.themoviedb.org/3/movie/</string>
+    <string name="default_movie">Movie poster</string>
+
+
+    <string name="fastscroller_track" translatable="false">FastScroller track</string>
+    <string name="fastscroller_handle" translatable="false">FastScroller handle</string>
 </resources>
