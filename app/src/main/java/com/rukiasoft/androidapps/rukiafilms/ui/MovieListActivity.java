@@ -1,24 +1,30 @@
 package com.rukiasoft.androidapps.rukiafilms.ui;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
+import android.support.design.widget.BottomNavigationView;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.rukiasoft.androidapps.rukiafilms.R;
+import com.rukiasoft.androidapps.rukiafilms.utils.RukiaFilmsConstants;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class MovieListActivity extends ToolbarAndProgressActivity {
+public class MovieListActivity extends ToolbarAndProgressActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
 
     private Unbinder unbinder;
+    @BindView(R.id.navigation_view) BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
         unbinder = ButterKnife.bind(this);
-
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -48,4 +54,29 @@ public class MovieListActivity extends ToolbarAndProgressActivity {
         unbinder.unbind();
         super.onDestroy();
     }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.navigation_popularity:
+                showOrderedList(RukiaFilmsConstants.ORDERED_BY_POPULARITY);
+                break;
+            case R.id.navigation_top_rated:
+                showOrderedList(RukiaFilmsConstants.ORDERED_BY_TOP_RATED);
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+
+    private void showOrderedList(int order){
+        MovieListActivityFragment fragment = (MovieListActivityFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.fragment);
+        if(fragment != null){
+            fragment.setMovies(order);
+        }
+    }
+
+
 }

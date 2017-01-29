@@ -32,6 +32,7 @@ import com.rukiasoft.androidapps.rukiafilms.R;
 import com.rukiasoft.androidapps.rukiafilms.model.MovieData;
 import com.rukiasoft.androidapps.rukiafilms.utils.RukiaFilmsConstants;
 
+import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,9 @@ public class MovieListRecyclerViewAdapter extends RecyclerView.Adapter<MovieList
     private OnCardClickListener onCardClickListener;
     private final Context mContext;
 
+    public void addItems(List<MovieData> items){
+        mItems.addAll(items);
+    }
 
     public MovieListRecyclerViewAdapter(Context context, List<MovieData> items) {
         this.mItems = new ArrayList<>(items);
@@ -114,7 +118,7 @@ public class MovieListRecyclerViewAdapter extends RecyclerView.Adapter<MovieList
                     .load(RukiaFilmsConstants.IMAGE_BASE_PATH + RukiaFilmsConstants.IMAGE_DIMEN +
                         item.getPosterPath())
                     .fitCenter()
-                    .signature(new MediaStoreSignature(RukiaFilmsConstants.MIME_TYPE_PICTURE, 1, 0))
+                    //.signature(new MediaStoreSignature(RukiaFilmsConstants.MIME_TYPE_PICTURE, 1, 0))
                     .error(R.drawable.splash_background)
                     .into(movieThumbnail);
         }
