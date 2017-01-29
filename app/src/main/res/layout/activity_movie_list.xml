@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.rukiasoft.androidapps.rukiafilms.ui.MovieLitActivity">
+    tools:context="com.rukiasoft.androidapps.rukiafilms.ui.MovieListActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -21,6 +21,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_movie_lit" />
+    <include layout="@layout/content_movie_list" />
 
 </android.support.design.widget.CoordinatorLayout>
