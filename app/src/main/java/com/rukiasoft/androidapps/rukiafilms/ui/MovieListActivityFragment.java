@@ -76,10 +76,12 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
     @State boolean isDownloading = false;
     @State int pagePopularity = 1;
     @State int pageTopRated = 1;
+    final Tools tools;
 
     private Unbinder unbinder;
 
     public MovieListActivityFragment() {
+        tools = new Tools();
     }
 
     @Override
@@ -103,9 +105,8 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
         //Set the mToolbarMovieListFragment
         if(getActivity() instanceof ToolbarAndProgressActivity){
             ((ToolbarAndProgressActivity) getActivity()).setToolbar(mToolbarMovieListFragment);
-            ((ToolbarAndProgressActivity)getActivity()).setRefreshLayout(refreshLayout);
-            ((ToolbarAndProgressActivity)getActivity()).disableRefreshLayoutSwipe();
         }
+        tools.setRefreshLayout(getActivity(), refreshLayout);
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -158,6 +159,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
 
     private void getPopularListPage(final Integer page){
         isDownloading = true;
+        tools.showRefreshLayout(getActivity());
         MovieEndpoints movieEndpoints = MovieEndpoints.retrofit.create(MovieEndpoints.class);
         Map<String, String> params = new HashMap<>();
         params.put("page", page.toString());
@@ -168,6 +170,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
         call.enqueue(new Callback<MovieListResponse>() {
             @Override
             public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response) {
+                tools.hideRefreshLayout(getActivity());
                 isDownloading = false;
                 if(response.body() == null) return;
                 List<MovieData> items = response.body().getResults();
@@ -180,6 +183,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
             }
             @Override
             public void onFailure(Call<MovieListResponse> call, Throwable t) {
+                tools.hideRefreshLayout(getActivity());
                 isDownloading = false;
                 Log.d(TAG, "Something went wrong: " + t.getMessage());
             }
@@ -188,6 +192,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
 
     private void getTopRatedListPage(Integer page){
         isDownloading = true;
+        tools.showRefreshLayout(getActivity());
         MovieEndpoints movieEndpoints = MovieEndpoints.retrofit.create(MovieEndpoints.class);
         Map<String, String> params = new HashMap<>();
         params.put("page", page.toString());
@@ -198,6 +203,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
         call.enqueue(new Callback<MovieListResponse>() {
             @Override
             public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response) {
+                tools.hideRefreshLayout(getActivity());
                 isDownloading = false;
                 if(response.body() == null) return;
                 List<MovieData> items = response.body().getResults();
@@ -211,6 +217,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
             }
             @Override
             public void onFailure(Call<MovieListResponse> call, Throwable t) {
+                tools.hideRefreshLayout(getActivity());
                 isDownloading = false;
                 Log.d(TAG, "Something went wrong: " + t.getMessage());
             }
