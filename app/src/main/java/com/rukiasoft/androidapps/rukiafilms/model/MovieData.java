@@ -5,6 +5,9 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
+@Parcel
 public class MovieData {
 
     @SerializedName("poster_path")
@@ -49,6 +52,10 @@ public class MovieData {
     @SerializedName("vote_average")
     @Expose
     private Double voteAverage;
+    private boolean favourite;
+
+    public MovieData() {
+    }
 
     public String getPosterPath() {
         return posterPath;
@@ -162,4 +169,11 @@ public class MovieData {
         this.voteAverage = voteAverage;
     }
 
+    public boolean isFavourite() {
+        return favourite;
+    }
+
+    public void setFavourite(boolean favourite) {
+        this.favourite = favourite;
+    }
 }

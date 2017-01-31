@@ -12,4 +12,8 @@
     <string name="fastscroller_handle" translatable="false">FastScroller handle</string>
 
     <string name="movies">%1$d movies</string>
+    <string name="action_favourite">Favourite button</string>
+    <string name="content_description_movie_poster">Movie Poster</string>
+    <string name="null_content_description" />
+    <string name="image_of_the_movie">Movie poster</string>
 </resources>

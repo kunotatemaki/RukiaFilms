@@ -1,32 +1,28 @@
 package com.rukiasoft.androidapps.rukiafilms.ui;
 
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.OvershootInterpolator;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.rukiasoft.androidapps.rukiafilms.BuildConfig;
 import com.rukiasoft.androidapps.rukiafilms.MovieConnection.MovieEndpoints;
 import com.rukiasoft.androidapps.rukiafilms.R;
-import com.rukiasoft.androidapps.rukiafilms.fastscroller.FastScroller;
 import com.rukiasoft.androidapps.rukiafilms.model.MovieData;
 import com.rukiasoft.androidapps.rukiafilms.model.MovieListResponse;
+import com.rukiasoft.androidapps.rukiafilms.scroll.EndlessRecyclerViewOnScrollListener;
+import com.rukiasoft.androidapps.rukiafilms.scroll.FastScroller;
 import com.rukiasoft.androidapps.rukiafilms.utils.LogHelper;
 import com.rukiasoft.androidapps.rukiafilms.utils.RukiaFilmsConstants;
 import com.rukiasoft.androidapps.rukiafilms.utils.Tools;
@@ -48,6 +44,7 @@ import retrofit2.Response;
  * A placeholder fragment containing a simple view.
  */
 public class MovieListActivityFragment extends Fragment implements MovieListRecyclerViewAdapter.OnCardClickListener{
+    private static final String SAVED_LAYOUT_MANAGER = MovieListActivityFragment.class.getPackage() + ".SAVED_LAYOUT_MANAGER";
     private final String TAG = LogHelper.makeLogTag(this.getClass());
     private final String KEY_SCROLL_POSITION = this.getClass().getPackage() + ".scrollposition";
 
@@ -69,14 +66,18 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
     TextView nMoviesInMovieList;
     @BindView(R.id.numberandtype_movies_bar)
     RelativeLayout numberAndTypeBar;
-    @State
-    int savedScrollPosition = 0;
     private int columnCount = 10;
     @State int order = RukiaFilmsConstants.ORDERED_BY_POPULARITY;
-    @State boolean isDownloading = false;
+
     @State int pagePopularity = 1;
     @State int pageTopRated = 1;
     final Tools tools;
+
+    private EndlessRecyclerViewOnScrollListener endlessRecyclerViewOnScrollListener;
+
+
+    private GridLayoutManager mGridLayoutManager;
+    private MovieListRecyclerViewAdapter mAdapter;
 
     private Unbinder unbinder;
 
@@ -108,40 +109,37 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
         }
         tools.setRefreshLayout(getActivity(), refreshLayout);
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if(!recyclerView.canScrollVertically(0) && !isDownloading) {
-                    isDownloading = true;
-                    switch (order){
-                        case RukiaFilmsConstants.ORDERED_BY_POPULARITY:
-                            pagePopularity++;
-                            getPopularListPage(pagePopularity);
-                            break;
-                        case RukiaFilmsConstants.ORDERED_BY_TOP_RATED:
-                            pageTopRated++;
-                            getTopRatedListPage(pageTopRated);
-                            break;
-                    }
-                }
-            }
-        });
+
         return view;
     }
+
+    protected void onMoviesGridInitialisationFinished() {
+        endlessRecyclerViewOnScrollListener = new EndlessRecyclerViewOnScrollListener(mGridLayoutManager) {
+            @Override
+            public void onLoadMore() {
+                switch (order){
+                    case RukiaFilmsConstants.ORDERED_BY_POPULARITY:
+                        pagePopularity++;
+                        getPopularListPage(pagePopularity);
+                        break;
+                    case RukiaFilmsConstants.ORDERED_BY_TOP_RATED:
+                        pageTopRated++;
+                        getTopRatedListPage(pageTopRated);
+                        break;
+                }
+            }
+        };
+        mRecyclerView.addOnScrollListener(endlessRecyclerViewOnScrollListener);
+    }
+
+
 
     @Override
     public void onPause() {
         super.onPause();
-        try {
-            if (mRecyclerView != null) {
-                if (mRecyclerView.getLayoutManager() != null) {
-                    savedScrollPosition = ((GridLayoutManager) mRecyclerView.getLayoutManager())
-                            .findFirstCompletelyVisibleItemPosition();
-                }
-            }
-        }catch (NullPointerException e){
-            e.printStackTrace();
+
+        if(mRecyclerView != null && mRecyclerView.getLayoutManager() != null) {
+            gridState = mRecyclerView.getLayoutManager().onSaveInstanceState();
         }
     }
 
@@ -158,7 +156,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
     }
 
     private void getPopularListPage(final Integer page){
-        isDownloading = true;
+
         tools.showRefreshLayout(getActivity());
         MovieEndpoints movieEndpoints = MovieEndpoints.retrofit.create(MovieEndpoints.class);
         Map<String, String> params = new HashMap<>();
@@ -171,7 +169,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
             @Override
             public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response) {
                 tools.hideRefreshLayout(getActivity());
-                isDownloading = false;
+                endlessRecyclerViewOnScrollListener.setLoading(false);
                 if(response.body() == null) return;
                 List<MovieData> items = response.body().getResults();
                 if(mPopularList.isEmpty()) {
@@ -184,14 +182,14 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
             @Override
             public void onFailure(Call<MovieListResponse> call, Throwable t) {
                 tools.hideRefreshLayout(getActivity());
-                isDownloading = false;
+                endlessRecyclerViewOnScrollListener.setLoading(false);
                 Log.d(TAG, "Something went wrong: " + t.getMessage());
             }
         });
     }
 
     private void getTopRatedListPage(Integer page){
-        isDownloading = true;
+
         tools.showRefreshLayout(getActivity());
         MovieEndpoints movieEndpoints = MovieEndpoints.retrofit.create(MovieEndpoints.class);
         Map<String, String> params = new HashMap<>();
@@ -204,7 +202,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
             @Override
             public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response) {
                 tools.hideRefreshLayout(getActivity());
-                isDownloading = false;
+                endlessRecyclerViewOnScrollListener.setLoading(false);
                 if(response.body() == null) return;
                 List<MovieData> items = response.body().getResults();
                 if(mTopRatedList.isEmpty()) {
@@ -218,7 +216,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
             @Override
             public void onFailure(Call<MovieListResponse> call, Throwable t) {
                 tools.hideRefreshLayout(getActivity());
-                isDownloading = false;
+                endlessRecyclerViewOnScrollListener.setLoading(false);
                 Log.d(TAG, "Something went wrong: " + t.getMessage());
             }
         });
@@ -252,18 +250,24 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
             Tools tools = new Tools();
             tools.hideRefreshLayout(getActivity());
         }
+        if(mAdapter == null) {
+            mAdapter = new MovieListRecyclerViewAdapter(getActivity(), mItems);
+            mAdapter.setHasStableIds(true);
+            mAdapter.setOnCardClickListener(this);
+        }
 
-        MovieListRecyclerViewAdapter adapter = new MovieListRecyclerViewAdapter(getActivity(), mItems);
-        adapter.setHasStableIds(true);
-        adapter.setOnCardClickListener(this);
-        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.setAdapter(mAdapter);
+
         columnCount = getResources().getInteger(R.integer.list_column_count);
-        GridLayoutManager gridLayoutManager =
-                new GridLayoutManager(getContext(), columnCount);
+        if(mGridLayoutManager == null) {
+           mGridLayoutManager =
+                    new GridLayoutManager(getContext(), columnCount);
+            mRecyclerView.setLayoutManager(mGridLayoutManager);
+        }
+
+        /**/
 
 
-        mRecyclerView.setLayoutManager(gridLayoutManager);
-        mRecyclerView.scrollToPosition(savedScrollPosition);
         //Set the fast Scroller
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if(fastScroller != null) {
@@ -272,7 +276,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
         }
 
         //set the number of recipes
-        String nMovies = String.format(getResources().getString(R.string.movies), adapter.getItemCount());
+        String nMovies = String.format(getResources().getString(R.string.movies), mRecyclerView.getAdapter().getItemCount());
         nMoviesInMovieList.setText(nMovies);
 
 
@@ -296,6 +300,8 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
     public interface OnCardClickListener {
         void onCardClick(View view, MovieData movieItem);
     }
+
+
 
 
 }

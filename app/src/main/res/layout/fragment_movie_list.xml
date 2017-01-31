@@ -27,7 +27,7 @@
                 android:paddingRight="@dimen/list_side_margin"
                 android:paddingBottom="@dimen/list_bottom_margin"
                 />
-            <com.rukiasoft.androidapps.rukiafilms.fastscroller.FastScroller
+            <com.rukiasoft.androidapps.rukiafilms.scroll.FastScroller
                 android:id="@+id/fastscroller"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

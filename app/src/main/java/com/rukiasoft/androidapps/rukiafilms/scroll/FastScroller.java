@@ -1,4 +1,4 @@
-package com.rukiasoft.androidapps.rukiafilms.fastscroller;
+package com.rukiasoft.androidapps.rukiafilms.scroll;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
