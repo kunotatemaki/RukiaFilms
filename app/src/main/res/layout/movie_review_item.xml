@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recipe_description_item_ingredients_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/movie_review_item_icon"
+        android:adjustViewBounds="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="5dip"
+        android:layout_marginEnd="5dip"
+        android:layout_marginLeft="@dimen/margin_text_cardview"
+        android:layout_marginStart="@dimen/margin_text_cardview"
+        android:src="@drawable/ic_dog_foot"
+        android:tint="@color/ColorPrimaryDark"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/null_content_description"/>
+
+    <TextView
+        android:id="@+id/movie_author_review_item_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:textStyle="bold"
+        android:textColor="@color/ColorPrimaryDark"
+        android:layout_toEndOf="@id/movie_review_item_icon"
+        android:layout_toRightOf="@id/movie_review_item_icon"
+        android:paddingRight="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        />
+
+    <TextView
+        android:id="@+id/movie_review_item_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:layout_below="@id/movie_author_review_item_description"
+        android:layout_alignStart="@id/movie_author_review_item_description"
+        android:layout_alignLeft="@id/movie_author_review_item_description"
+        android:paddingRight="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        />
+
+</RelativeLayout>

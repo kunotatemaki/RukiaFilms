@@ -20,22 +20,22 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:id="@+id/photo_container_recipe_details">
+            android:id="@+id/photo_container_movie_details">
             <ImageView
-                android:id="@+id/recipe_pic"
+                android:id="@+id/movie_background"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/image_of_the_movie"
                 />
             <ImageView
-                android:id="@+id/recipe_pic_protection"
+                android:id="@+id/movie_background_protection"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/photo_background_protection"
                 android:contentDescription="@string/null_content_description"/>
             <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar_recipe_details"
+                android:id="@+id/toolbar_movie_details"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@android:color/transparent"
@@ -43,10 +43,10 @@
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 android:layout_alignParentTop="true"/>
             <TextView
-                android:id="@+id/recipe_name_recipe_details"
+                android:id="@+id/movie_title_movie_details"
                 android:textAppearance="@style/Theme.ExpandedText"
                 android:layout_alignParentBottom="true"
-                app:layout_anchor="@id/appbarlayout_recipe_details"
+                app:layout_anchor="@id/appbarlayout_movie_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
@@ -55,7 +55,7 @@
                 android:layout_marginStart="@dimen/title_margin_expanded"
                 android:layout_marginRight="@dimen/title_margin_expanded"/>
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/recipe_description_fab"
+                android:id="@+id/movie_description_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:backgroundTint="@color/ColorAccent"
@@ -72,7 +72,7 @@
         </RelativeLayout>
 
         <android.support.v4.widget.NestedScrollView
-            android:id="@+id/scrollview_recipe_details"
+            android:id="@+id/scrollview_movie_details"
             android:layout_width="0dp"
             android:layout_weight="2"
             android:layout_height="match_parent">

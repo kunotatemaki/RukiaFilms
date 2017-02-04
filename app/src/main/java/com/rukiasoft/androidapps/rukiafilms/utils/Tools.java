@@ -1,8 +1,14 @@
 package com.rukiasoft.androidapps.rukiafilms.utils;
 
 import android.app.Activity;
+import android.content.Context;
+import android.net.Uri;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.signature.MediaStoreSignature;
 import com.rukiasoft.androidapps.rukiafilms.ui.ToolbarAndProgressActivity;
 
 /**
@@ -44,6 +50,25 @@ public class Tools {
             ((ToolbarAndProgressActivity) activity).hideRefreshLayoutSwipeProgress();
         }
     }
+    public void loadImageFromPath(Context mContext, ImageView imageView, String path, int defaultImage, int version) {
+        Glide.with(mContext)
+                .load(Uri.parse(path))
+                .centerCrop()
+                .signature(new MediaStoreSignature(RukiaFilmsConstants.MIME_TYPE_PICTURE, version, 0))
+                .error(defaultImage)
+                .into(imageView);
+    }
+
+    public void loadImageFromPath(Context mContext, BitmapImageViewTarget bitmapImageViewTarget, String path, int defaultImage, int version) {
+        Glide.with(mContext)
+                .load(Uri.parse(path))
+                .asBitmap()
+                .signature(new MediaStoreSignature(RukiaFilmsConstants.MIME_TYPE_PICTURE, version, 0))
+                .centerCrop()
+                .error(defaultImage)
+                .into(bitmapImageViewTarget);
+    }
+
 
 
 }

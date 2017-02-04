@@ -16,4 +16,8 @@
     <string name="content_description_movie_poster">Movie Poster</string>
     <string name="null_content_description" />
     <string name="image_of_the_movie">Movie poster</string>
+    <string name="overview">Overview</string>
+    <string name="videos">Videos</string>
+    <string name="comming_soon">Comming soon...</string>
+    <string name="reviews">Reviews</string>
 </resources>

@@ -12,4 +12,5 @@ public class RukiaFilmsConstants {
     public static final int ORDERED_BY_POPULARITY = 0;
     public static final int ORDERED_BY_TOP_RATED = 1;
     public static final String KEY_MOVIE = "movie";
+
 }

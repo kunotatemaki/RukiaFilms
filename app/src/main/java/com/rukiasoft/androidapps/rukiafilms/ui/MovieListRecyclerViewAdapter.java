@@ -18,7 +18,6 @@ package com.rukiasoft.androidapps.rukiafilms.ui;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,12 +26,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.signature.MediaStoreSignature;
 import com.rukiasoft.androidapps.rukiafilms.R;
 import com.rukiasoft.androidapps.rukiafilms.model.MovieData;
 import com.rukiasoft.androidapps.rukiafilms.utils.RukiaFilmsConstants;
 
-import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.List;
 

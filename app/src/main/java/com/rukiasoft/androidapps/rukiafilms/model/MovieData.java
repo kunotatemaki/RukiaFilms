@@ -5,9 +5,7 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import org.parceler.Parcel;
 
-@Parcel
 public class MovieData {
 
     @SerializedName("poster_path")
@@ -53,8 +51,28 @@ public class MovieData {
     @Expose
     private Double voteAverage;
     private boolean favourite;
+    private List<Review> reviews;
 
     public MovieData() {
+    }
+
+    public MovieData(String posterPath, Boolean adult, String overview, String releaseDate, List<Integer> genreIds, Integer id, String originalTitle, String originalLanguage, String title, String backdropPath, Double popularity, Integer voteCount, Boolean video, Double voteAverage, boolean favourite, List<Review> reviews) {
+        this.posterPath = posterPath;
+        this.adult = adult;
+        this.overview = overview;
+        this.releaseDate = releaseDate;
+        this.genreIds = genreIds;
+        this.id = id;
+        this.originalTitle = originalTitle;
+        this.originalLanguage = originalLanguage;
+        this.title = title;
+        this.backdropPath = backdropPath;
+        this.popularity = popularity;
+        this.voteCount = voteCount;
+        this.video = video;
+        this.voteAverage = voteAverage;
+        this.favourite = favourite;
+        this.reviews = reviews;
     }
 
     public String getPosterPath() {
@@ -175,5 +193,13 @@ public class MovieData {
 
     public void setFavourite(boolean favourite) {
         this.favourite = favourite;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 }

@@ -2,6 +2,7 @@ package com.rukiasoft.androidapps.rukiafilms.MovieConnection;
 
 import com.rukiasoft.androidapps.rukiafilms.model.MovieData;
 import com.rukiasoft.androidapps.rukiafilms.model.MovieListResponse;
+import com.rukiasoft.androidapps.rukiafilms.model.ReviewsParent;
 
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,12 @@ public interface MovieEndpoints {
     @GET("top_rated")
     Call<MovieListResponse> GetTopRatedMoviesPage(
             @QueryMap Map<String, String> params);
+
+    @GET("{movie_id}/reviews")
+    Call<ReviewsParent> GetMovieReviews(
+            @Path("movie_id") String movieId,
+            @QueryMap Map<String, String> params);
+
 
 
     Retrofit retrofit = new Retrofit.Builder()

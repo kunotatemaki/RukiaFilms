@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.rukiasoft.androidapps.rukiafilms.R;
 import com.rukiasoft.androidapps.rukiafilms.model.MovieData;
+import com.rukiasoft.androidapps.rukiafilms.model.MovieParcelable;
 import com.rukiasoft.androidapps.rukiafilms.utils.RukiaFilmsConstants;
 
-import org.parceler.Parcels;
+
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -23,13 +25,14 @@ public class MovieDetailActivity extends ToolbarAndProgressActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
         unbinder = ButterKnife.bind(this);
-        MovieData movieData;
+        MovieParcelable movieParcelable = null;
         Intent intent = getIntent();
         if(intent != null && intent.hasExtra(RukiaFilmsConstants.KEY_MOVIE))
-            movieData = (MovieData) Parcels.unwrap(getIntent().getExtras().getParcelable(RukiaFilmsConstants.KEY_MOVIE);
+            movieParcelable = intent.getParcelableExtra(RukiaFilmsConstants.KEY_MOVIE);
         else{
             finish();
         }
+        MovieData movieData = MovieParcelable.extract(movieParcelable);
         MovieDetailsFragment movieDetailsFragment = (MovieDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.details_movie_fragment);
         if(movieDetailsFragment != null){
             movieDetailsFragment.setMovie(movieData);

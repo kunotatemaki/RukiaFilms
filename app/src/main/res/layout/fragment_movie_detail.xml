@@ -10,11 +10,11 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/appbarlayout_recipe_details"
+        android:id="@+id/appbarlayout_movie_details"
         android:background="@android:color/transparent"
         app:contentScrim="@android:color/transparent">
         <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar_recipe_details"
+            android:id="@+id/collapsing_toolbar_movie_details"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
@@ -25,34 +25,34 @@
             app:expandedTitleTextAppearance="@style/Theme.ExpandedText.Trasparent"
             app:expandedTitleMarginStart="@dimen/title_margin_expanded"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
-            <com.rukiasoft.androidapps.cocinaconroll.classes.ThreeTwoImageView
-                android:id="@+id/recipe_pic"
+            <com.rukiasoft.androidapps.rukiafilms.ui.utils.ThreeTwoImageView
+                android:id="@+id/movie_background"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
                 />
-            <com.rukiasoft.androidapps.cocinaconroll.classes.ThreeTwoImageView
-                android:id="@+id/recipe_pic_protection"
+            <com.rukiasoft.androidapps.rukiafilms.ui.utils.ThreeTwoImageView
+                android:id="@+id/movie_background_protection"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:background="@drawable/photo_background_protection"
                 app:layout_collapseMode="parallax"/>
             <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar_recipe_details"
+                android:id="@+id/toolbar_movie_details"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@android:color/transparent"
                 app:contentScrim="@android:color/transparent"
-                android:theme="@style/CocinaConRollActionBarTheme"
+                android:theme="@style/RukiaFilmsActionBarTheme"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:contentInsetStart="@dimen/title_margin_collapsed"
                 app:layout_collapseMode="pin"/>
             <TextView
-                android:id="@+id/recipe_name_recipe_details"
+                android:id="@+id/movie_title_movie_details"
                 android:textAppearance="@style/Theme.ExpandedText"
                 android:layout_gravity="bottom"
-                app:layout_anchor="@id/appbarlayout_recipe_details"
+                app:layout_anchor="@id/appbarlayout_movie_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
@@ -65,7 +65,7 @@
     <android.support.v4.widget.NestedScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/scrollview_recipe_details"
+        android:id="@+id/scrollview_movie_details"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -73,7 +73,7 @@
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/recipe_description_fab"
+        android:id="@+id/movie_description_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:fabSize="mini"
@@ -81,7 +81,7 @@
         android:elevation="6dp"
         app:pressedTranslationZ="12dp"
         android:layout_margin="@dimen/fab_margin"
-        app:layout_anchor="@id/appbarlayout_recipe_details"
+        app:layout_anchor="@id/appbarlayout_movie_details"
         app:layout_anchorGravity="bottom|right|end"
         android:contentDescription="@string/action_favourite"
         app:rippleColor="@android:color/white"

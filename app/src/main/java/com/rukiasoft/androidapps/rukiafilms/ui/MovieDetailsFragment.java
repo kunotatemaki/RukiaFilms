@@ -1,15 +1,9 @@
 package com.rukiasoft.androidapps.rukiafilms.ui;
 
 
-import android.Manifest;
 import android.animation.Animator;
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -22,7 +16,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -30,12 +23,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
@@ -48,17 +37,31 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.rukiasoft.androidapps.rukiafilms.BuildConfig;
+import com.rukiasoft.androidapps.rukiafilms.MovieConnection.MovieEndpoints;
+import com.rukiasoft.androidapps.rukiafilms.R;
 import com.rukiasoft.androidapps.rukiafilms.model.MovieData;
+import com.rukiasoft.androidapps.rukiafilms.model.MovieParcelable;
+import com.rukiasoft.androidapps.rukiafilms.model.Review;
+import com.rukiasoft.androidapps.rukiafilms.model.ReviewsParent;
 import com.rukiasoft.androidapps.rukiafilms.utils.LogHelper;
+import com.rukiasoft.androidapps.rukiafilms.utils.RukiaFilmsConstants;
+import com.rukiasoft.androidapps.rukiafilms.utils.Tools;
 
-import org.parceler.Parcels;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import icepick.State;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MovieDetailsFragment extends Fragment implements
@@ -69,31 +72,33 @@ public class MovieDetailsFragment extends Fragment implements
     private static final String KEY_SAVE_MOVIE = MovieDetailsFragment.class.getPackage() + "." + MovieDetailsFragment.class.getSimpleName() + ".saverecipe";
 
 
-
-    @BindView(R.id.tip_body_cardview) TextView tip;
-    @BindView(R.id.card_tip)
-    CardView cardTip;
-    @BindView(R.id.recipe_pic) ImageView mPhotoView;
-    @Nullable@BindView(R.id.appbarlayout_recipe_details)
+    @BindView(R.id.image_movie_detail_poster) ImageView poster;
+    @BindView(R.id.text_movie_original_title) TextView originalTitle;
+    @BindView(R.id.text_movie_release_date) TextView releaseDate;
+    @BindView(R.id.text_movie_vote_average) TextView voteAverage;
+    @BindView(R.id.overview_body_cardview) TextView overview;
+    @BindView(R.id.card_review)
+    CardView cardReview;
+    @BindView(R.id.movie_background) ImageView background;
+    @Nullable@BindView(R.id.appbarlayout_movie_details)
     AppBarLayout mAppBarLayout;
-    @Nullable@BindView(R.id.photo_container_recipe_details)
+    @Nullable@BindView(R.id.photo_container_movie_details)
     RelativeLayout photoContainer;
-    @BindView(R.id.toolbar_recipe_details)Toolbar toolbarRecipeDetails;
-    @BindView(R.id.recipe_name_recipe_details) TextView recipeName;
-    @BindView(R.id.recipe_description_fab)
-    FloatingActionButton recipeDescriptionFAB;
-    @Nullable@BindView(R.id.collapsing_toolbar_recipe_details)
+    @BindView(R.id.toolbar_movie_details)Toolbar toolbarMovieDetails;
+    @BindView(R.id.movie_title_movie_details) TextView movieName;
+    @BindView(R.id.movie_description_fab)
+    FloatingActionButton movieDescriptionFAB;
+    @Nullable@BindView(R.id.collapsing_toolbar_movie_details)
     CollapsingToolbarLayout collapsingToolbarLayout;
-    @BindView(R.id.listview_ingredients_cardview)
-    LinearLayout ingredientsList;
-    @BindView(R.id.listview_steps_cardview)
-    LinearLayout stepsList;
+    @BindView(R.id.listview_reviews_cardview)
+    LinearLayout reviewList;
     private Unbinder unbinder;
-    private MovieData movie;
-    private boolean movieLoaded = false;
-    private ActionBar actionBar;
-    @BindView(R.id.cardview_link_textview) TextView author;
-    private boolean land;
+
+    MovieData movie;
+    @State MovieParcelable movieParcelable;
+    //@State boolean movieLoaded = false;
+    ActionBar actionBar;
+    @State boolean land;
     @State boolean animated;
     private View viewToReveal;
 
@@ -104,21 +109,11 @@ public class MovieDetailsFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(false);
+        setRetainInstance(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getActivity().supportPostponeEnterTransition();
         }
 
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save movie
-        movieLoaded = false;
-        if (movie != null) {
-            savedInstanceState.putParcelable(KEY_SAVE_MOVIE, Parcels.wrap(movie));
-        }
-        super.onSaveInstanceState(savedInstanceState);
     }
 
 
@@ -127,7 +122,7 @@ public class MovieDetailsFragment extends Fragment implements
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void run() {
-            recipeDescriptionFAB.animate().setDuration(250)
+            movieDescriptionFAB.animate().setDuration(250)
                     .setInterpolator(new AnticipateOvershootInterpolator())
                     .scaleX(1.2f)
                     .scaleY(1.2f)
@@ -139,7 +134,7 @@ public class MovieDetailsFragment extends Fragment implements
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void run() {
-            recipeDescriptionFAB.animate().setDuration(250)
+            movieDescriptionFAB.animate().setDuration(250)
                     .setInterpolator(new AnticipateOvershootInterpolator())
                     .scaleX(1.0f)
                     .scaleY(1.0f);
@@ -150,13 +145,13 @@ public class MovieDetailsFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View mRootView = inflater.inflate(R.layout.fragment_movie_details, container, false);
+        View mRootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
         unbinder = ButterKnife.bind(this, mRootView);
         land = getResources().getBoolean(R.bool.land);
 
 
 
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarRecipeDetails);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarMovieDetails);
         actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -167,9 +162,9 @@ public class MovieDetailsFragment extends Fragment implements
             mAppBarLayout.addOnOffsetChangedListener(this);
         }
 
-        if(recipeDescriptionFAB != null) {
+        if(movieDescriptionFAB != null) {
 
-            recipeDescriptionFAB.setOnClickListener(new View.OnClickListener() {
+            movieDescriptionFAB.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -186,13 +181,12 @@ public class MovieDetailsFragment extends Fragment implements
             });
         }
 
-        if(savedInstanceState != null){
-            if(savedInstanceState.containsKey(KEY_SAVE_MOVIE)) {
-                movie = (MovieData)Parcels.unwrap(savedInstanceState.getParcelable(KEY_SAVE_MOVIE));
-            }
+        if(movieParcelable != null){
+            movie = MovieParcelable.extract(movieParcelable);
         }
 
         if(movie != null){
+            //movie.getReviews() == null? getReviews() : loadMovie();
             loadMovie();
         }
         if(animated){
@@ -240,12 +234,15 @@ public class MovieDetailsFragment extends Fragment implements
 
     private void clickOnHeartButton(){
         if (movie.isFavourite()) {
-            recipeDescriptionFAB.setImageDrawable(ContextCompat.getDrawable(getActivity(),
+            movieDescriptionFAB.setImageDrawable(ContextCompat.getDrawable(getActivity(),
                     R.drawable.ic_favorite_outline_white_24dp));
         } else {
-            recipeDescriptionFAB.setImageDrawable(ContextCompat.getDrawable(getActivity(),
+            movieDescriptionFAB.setImageDrawable(ContextCompat.getDrawable(getActivity(),
                     R.drawable.ic_favorite_white_24dp));
         }
+        // TODO: 4/2/17 almacenar en la base de datos
+        movie.setFavourite(!movie.isFavourite());
+        movieParcelable = MovieParcelable.create(movie);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             scaleIn.run();
         }
@@ -269,18 +266,20 @@ public class MovieDetailsFragment extends Fragment implements
 
     private void handleTitleBehavior(float percentage) {
         if (percentage >= PERCENTAGE_TO_ELLIPSIZE_TITLE) {
-            recipeName.setVisibility(View.GONE);
+            movieName.setVisibility(View.GONE);
         }else{
-            recipeName.setVisibility(View.VISIBLE);
+            movieName.setVisibility(View.VISIBLE);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                recipeName.setAlpha(1 - percentage / PERCENTAGE_TO_ELLIPSIZE_TITLE);
+                movieName.setAlpha(1 - percentage / PERCENTAGE_TO_ELLIPSIZE_TITLE);
             }
         }
     }
 
     public void setMovie(MovieData movie) {
+        if(movieParcelable != null) return;
         this.movie = movie;
-        loadMovie();
+        movieParcelable = MovieParcelable.create(movie);
+        getReviews();
     }
 
     @Override
@@ -290,39 +289,26 @@ public class MovieDetailsFragment extends Fragment implements
     }
 
     private void loadMovie(){
-        if(movieLoaded) return;
-        // TODO: 31/1/17 cargar la receta en la vista
-        /*if(recipeName != null){
-            recipeName.setText(recipe.getName());
-        }
-        if(recipe.getMinutes()>0){
-            textMinutes.setText(String.valueOf(recipe.getMinutes()));
-            textMinutes.setVisibility(View.VISIBLE);
-            iconMinutes.setVisibility(View.VISIBLE);
-        }else{
-            textMinutes.setVisibility(View.GONE);
-            iconMinutes.setVisibility(View.GONE);
-        }
-        if(recipe.getPortions()>0){
-            textPortions.setText(String.valueOf(recipe.getPortions()));
-            textPortions.setVisibility(View.VISIBLE);
-            iconPortions.setVisibility(View.VISIBLE);
-        }else{
-            textPortions.setVisibility(View.GONE);
-            iconPortions.setVisibility(View.GONE);
-        }
+        //if(movieLoaded) return;
+        Tools tools = new Tools();
+        movieName.setText(movie.getTitle());
+        overview.setText(movie.getOverview());
+        originalTitle.setText(movie.getOriginalTitle());
+        releaseDate.setText(movie.getReleaseDate());
+        voteAverage.setText(movie.getVoteAverage().toString());
+
         if(actionBar != null){
-            actionBar.setTitle(recipe.getName());
+            actionBar.setTitle(movie.getTitle());
         }
-        if(recipeDescriptionFAB != null){
-            if (recipe.getFavourite()) {
-                recipeDescriptionFAB.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_favorite_white_24dp));
+        if(movieDescriptionFAB != null){
+            if (movie.isFavourite()) {
+                movieDescriptionFAB.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_favorite_white_24dp));
             } else {
-                recipeDescriptionFAB.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_favorite_outline_white_24dp));
+                movieDescriptionFAB.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_favorite_outline_white_24dp));
             }
         }
-        if(mPhotoView != null){
-            BitmapImageViewTarget bitmapImageViewTarget = new BitmapImageViewTarget(mPhotoView) {
+        if(background != null){
+            BitmapImageViewTarget bitmapImageViewTarget = new BitmapImageViewTarget(background) {
                 @Override
                 public void onResourceReady(Bitmap bitmap, GlideAnimation anim) {
                     super.onResourceReady(bitmap, anim);
@@ -337,56 +323,45 @@ public class MovieDetailsFragment extends Fragment implements
                     applyPalette(bitmap);
                 }
             };
-            rwTools.loadImageFromPath(getActivity().getApplicationContext(),
-                    bitmapImageViewTarget, recipe.getPathPicture(),
-                    R.drawable.default_dish, recipe.getVersion());
+
+
+            Glide.with(getContext())
+                    .load(RukiaFilmsConstants.IMAGE_BASE_PATH + RukiaFilmsConstants.IMAGE_DIMEN +
+                            movie.getBackdropPath())
+                    .asBitmap()
+                    .centerCrop()
+                    //.signature(new MediaStoreSignature(RukiaFilmsConstants.MIME_TYPE_PICTURE, 1, 0))
+                    .error(R.drawable.splash_background)
+                    .into(bitmapImageViewTarget);
         }
 
-        //Set the author
-        String sAuthor = getResources().getString(R.string.default_author);
-        if(recipe.getAuthor().equals(sAuthor))
-            author.setText(sAuthor);
-        else {
-            String link = getResources().getString(R.string.original_link).concat(" ").concat(recipe.getAuthor());
-            author.setText(Html.fromHtml(link));
-            author.setMovementMethod(LinkMovementMethod.getInstance());
-        }
+        Glide.with(getContext())
+                .load(RukiaFilmsConstants.IMAGE_BASE_PATH + RukiaFilmsConstants.IMAGE_DIMEN +
+                        movie.getPosterPath())
+                .fitCenter()
+                //.signature(new MediaStoreSignature(RukiaFilmsConstants.MIME_TYPE_PICTURE, 1, 0))
+                .error(R.drawable.splash_background)
+                .into(poster);
+
+
+
 
         //set ingredients and steps
-        ingredientsList.removeAllViews();
-        for(String ingredient : recipe.getIngredients()){
+        reviewList.removeAllViews();
+        if(movie.getReviews() == null) return;
+        for(Review review : movie.getReviews()){
             LayoutInflater inflater;
             inflater = (LayoutInflater) getActivity()
                     .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            View ingredientItem = inflater.inflate(R.layout.recipe_description_item, null);
-            TextView textView = (TextView) ingredientItem.findViewById(R.id.recipe_description_item_description);
-            textView.setText(ingredient);
-            ImageView icon = (ImageView) ingredientItem.findViewById(R.id.recipe_description_item_icon);
-            icon.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_bone));
-            ingredientsList.addView(ingredientItem);
-        }
-        stepsList.removeAllViews();
-        for(String step : recipe.getSteps()){
-            LayoutInflater inflater;
-            inflater = (LayoutInflater) getActivity()
-                    .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            View stepItem = inflater.inflate(R.layout.recipe_description_item, null);
-            TextView textView = (TextView) stepItem.findViewById(R.id.recipe_description_item_description);
-            textView.setText(step);
-            ImageView icon = (ImageView) stepItem.findViewById(R.id.recipe_description_item_icon);
-            icon.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_dog_foot));
-            stepsList.addView(stepItem);
+            View reviewItem = inflater.inflate(R.layout.movie_review_item, null);
+            TextView reviewTextview = (TextView) reviewItem.findViewById(R.id.movie_review_item_description);
+            reviewTextview.setText(review.getContent());
+            TextView authorTextview = (TextView) reviewItem.findViewById(R.id.movie_author_review_item_description);
+            authorTextview.setText(review.getAuthor());
+
+            reviewList.addView(reviewItem);
         }
 
-        //set tip
-        if (recipe.getTip() != null && !recipe.getTip().isEmpty()) {
-            cardTip.setVisibility(View.VISIBLE);
-            tip.setText(recipe.getTip());
-        }else{
-            cardTip.setVisibility(View.GONE);
-        }*/
-
-        recipeLoaded = true;
     }
 
     private void applyPalette(Bitmap bitmap){
@@ -409,7 +384,7 @@ public class MovieDetailsFragment extends Fragment implements
                         collapsingToolbarLayout.setContentScrim(new ColorDrawable(mMutedColor));
                     }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        recipeDescriptionFAB.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{mVibrantColor}));
+                        movieDescriptionFAB.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{mVibrantColor}));
                     }
                 }catch(Exception e){
                     e.printStackTrace();
@@ -425,6 +400,30 @@ public class MovieDetailsFragment extends Fragment implements
 
     }
 
+    private void getReviews(){
+        final MovieEndpoints movieEndpoints = MovieEndpoints.retrofit.create(MovieEndpoints.class);
+        Map<String, String> params = new HashMap<>();
+        params.put("page", "1");
+        params.put("api_key", BuildConfig.API_KEY);
+        final Call<ReviewsParent> call =
+                movieEndpoints.GetMovieReviews(movie.getId().toString(), params);
 
+        call.enqueue(new Callback<ReviewsParent>() {
+            @Override
+            public void onResponse(Call<ReviewsParent> call, Response<ReviewsParent> response) {
+                if(response.body() == null) return;
+                ReviewsParent resp = response.body();
+                movie.setReviews(resp.getResults());
+                movieParcelable = MovieParcelable.create(movie);
+                loadMovie();
+
+            }
+            @Override
+            public void onFailure(Call<ReviewsParent> call, Throwable t) {
+
+                Log.d(TAG, "Something went wrong: " + t.getMessage());
+            }
+        });
+    }
 
 }
