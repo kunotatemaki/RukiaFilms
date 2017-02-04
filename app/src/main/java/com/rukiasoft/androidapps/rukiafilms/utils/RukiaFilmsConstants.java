@@ -13,4 +13,5 @@ public class RukiaFilmsConstants {
     public static final int ORDERED_BY_TOP_RATED = 1;
     public static final String KEY_MOVIE = "movie";
 
+    public static final int REQUEST_CODE_ANIMATION = 101;
 }
