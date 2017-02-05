@@ -45,13 +45,13 @@
         android:id="@+id/appbar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:theme="@style/RukiaFilmsActionBarTheme"
+        android:theme="@style/RukiaFilmsActionBarTheme"
         app:layout_scrollFlags="scroll|enterAlways" >
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_movie_list_fragment"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:theme="@style/RukiaFilmsActionBarTheme"
+            android:theme="@style/RukiaFilmsActionBarTheme"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:layout_scrollFlags="scroll|enterAlways" />
         <RelativeLayout
