@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -72,7 +73,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
     @State int pagePopularity = 1;
     @State int pageTopRated = 1;
     final Tools tools;
-
+    StaggeredGridLayoutManager layoutManager;
     private Unbinder unbinder;
 
     public MovieListActivityFragment() {
@@ -82,6 +83,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "oncreate");
         setRetainInstance(true);
         if(mPopularList == null){
             mPopularList = new ArrayList<>();
@@ -94,6 +96,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "oncreateview");
         View view = inflater.inflate(R.layout.fragment_movie_list, container, false);
         unbinder = ButterKnife.bind(this, view);
 
@@ -127,12 +130,15 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
 
     @Override
     public void onPause() {
+        Log.d(TAG, "onpause");
         super.onPause();
         try {
             if (mRecyclerView != null) {
                 if (mRecyclerView.getLayoutManager() != null) {
+
                     savedScrollPosition = ((GridLayoutManager) mRecyclerView.getLayoutManager())
                             .findFirstVisibleItemPosition();
+
                 }
             }
         }catch (NullPointerException e){
@@ -142,17 +148,20 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
 
     @Override
     public void onDestroyView() {
+        Log.d(TAG, "ondestroyview");
         super.onDestroyView();
         unbinder.unbind();
     }
 
     @Override
     public void onResume() {
+        Log.d(TAG, "onresume");
         super.onResume();
         setMovies(order);
     }
 
     private void getPopularListPage(final Integer page){
+        Log.d(TAG, "getpopularlist");
         isDownloading = true;
         tools.showRefreshLayout(getActivity());
         MovieEndpoints movieEndpoints = MovieEndpoints.retrofit.create(MovieEndpoints.class);
@@ -165,6 +174,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
         call.enqueue(new Callback<MovieListResponse>() {
             @Override
             public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response) {
+                Log.d(TAG, "responsepopularlist");
                 tools.hideRefreshLayout(getActivity());
                 isDownloading = false;
                 if(response.body() == null) return;
@@ -186,6 +196,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
     }
 
     private void getTopRatedListPage(Integer page){
+        Log.d(TAG, "gettoprated");
         isDownloading = true;
         tools.showRefreshLayout(getActivity());
         MovieEndpoints movieEndpoints = MovieEndpoints.retrofit.create(MovieEndpoints.class);
@@ -198,6 +209,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
         call.enqueue(new Callback<MovieListResponse>() {
             @Override
             public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response) {
+                Log.d(TAG, "responsetoprated");
                 tools.hideRefreshLayout(getActivity());
                 isDownloading = false;
                 if(response.body() == null) return;
@@ -220,6 +232,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
     }
 
     public void setMovies(int order){
+        Log.d(TAG, "setmovies");
         this.order = order;
         switch (order){
             case RukiaFilmsConstants.ORDERED_BY_POPULARITY:
@@ -243,11 +256,11 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
 
     private void setData(List<MovieData> mItems){
 
+        Log.d(TAG, "setdata");
         if(isResumed()) {
             Tools tools = new Tools();
             tools.hideRefreshLayout(getActivity());
         }
-
         MovieListRecyclerViewAdapter adapter = new MovieListRecyclerViewAdapter(getActivity(), mItems);
         adapter.setHasStableIds(true);
         adapter.setOnCardClickListener(this);
@@ -275,6 +288,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
     }
 
     private  void addData(List<MovieData> items){
+        Log.d(TAG, "adddata");
         MovieListRecyclerViewAdapter adapter = (MovieListRecyclerViewAdapter) mRecyclerView.getAdapter();
         adapter.addItems(items);
         adapter.notifyDataSetChanged();
@@ -285,7 +299,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
     @Override
     public void onCardClick(View view, MovieData movieItem) {
         /***/
-        Log.d(TAG, movieItem.getTitle());
+        Log.d(TAG, "oncardclick: " + movieItem.getTitle());
         Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
         MovieParcelable movieParcelable = MovieParcelable.create(movieItem);
         intent.putExtra(RukiaFilmsConstants.KEY_MOVIE, movieParcelable);

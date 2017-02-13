@@ -20,11 +20,12 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //start animation if needed
-        if(!started){
+        /*if(!started){
             launchAnimation();
         }else {
             launchMainScreen();
-        }
+        }*/
+        launchMainScreen();
     }
 
     @Override

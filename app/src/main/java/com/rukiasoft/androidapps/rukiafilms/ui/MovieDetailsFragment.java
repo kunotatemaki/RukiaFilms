@@ -109,6 +109,7 @@ public class MovieDetailsFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "oncreate");
         setRetainInstance(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getActivity().supportPostponeEnterTransition();
@@ -146,6 +147,7 @@ public class MovieDetailsFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View mRootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+        Log.d(TAG, "oncreateview");
         unbinder = ButterKnife.bind(this, mRootView);
         land = getResources().getBoolean(R.bool.land);
 
@@ -228,6 +230,7 @@ public class MovieDetailsFragment extends Fragment implements
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "ondestroy");
         super.onDestroy();
 
     }
@@ -276,6 +279,7 @@ public class MovieDetailsFragment extends Fragment implements
     }
 
     public void setMovie(MovieData movie) {
+        Log.d(TAG, "set movie");
         if(movieParcelable != null) return;
         this.movie = movie;
         movieParcelable = MovieParcelable.create(movie);
@@ -285,12 +289,13 @@ public class MovieDetailsFragment extends Fragment implements
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Log.d(TAG, "ondestroyview");
         unbinder.unbind();
     }
 
     private void loadMovie(){
         //if(movieLoaded) return;
-        Tools tools = new Tools();
+        Log.d(TAG, "load movie");
         movieName.setText(movie.getTitle());
         overview.setText(movie.getOverview());
         originalTitle.setText(movie.getOriginalTitle());
@@ -401,6 +406,7 @@ public class MovieDetailsFragment extends Fragment implements
     }
 
     private void getReviews(){
+        Log.d(TAG, "getreviews");
         final MovieEndpoints movieEndpoints = MovieEndpoints.retrofit.create(MovieEndpoints.class);
         Map<String, String> params = new HashMap<>();
         params.put("page", "1");

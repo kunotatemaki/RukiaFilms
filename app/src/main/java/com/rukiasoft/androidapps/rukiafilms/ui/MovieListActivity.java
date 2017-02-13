@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.BottomNavigationView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.rukiasoft.androidapps.rukiafilms.R;
+import com.rukiasoft.androidapps.rukiafilms.utils.LogHelper;
 import com.rukiasoft.androidapps.rukiafilms.utils.RukiaFilmsConstants;
 
 import butterknife.BindView;
@@ -16,12 +18,14 @@ import butterknife.Unbinder;
 
 public class MovieListActivity extends ToolbarAndProgressActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
 
+    private final String TAG = LogHelper.makeLogTag(this.getClass());
     private Unbinder unbinder;
     @BindView(R.id.navigation_view) BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "oncreate");
         setContentView(R.layout.activity_movie_list);
         unbinder = ButterKnife.bind(this);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
@@ -52,11 +56,13 @@ public class MovieListActivity extends ToolbarAndProgressActivity implements Bot
     @Override
     protected void onDestroy() {
         unbinder.unbind();
+        Log.d(TAG, "ondestroy");
         super.onDestroy();
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Log.d(TAG, "onnavigationitemselected");
         switch (item.getItemId()) {
             case R.id.navigation_popularity:
                 showOrderedList(RukiaFilmsConstants.ORDERED_BY_POPULARITY);
@@ -71,6 +77,7 @@ public class MovieListActivity extends ToolbarAndProgressActivity implements Bot
     }
 
     private void showOrderedList(int order){
+        Log.d(TAG, "showorderedlist");
         MovieListActivityFragment fragment = (MovieListActivityFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragment);
         if(fragment != null){

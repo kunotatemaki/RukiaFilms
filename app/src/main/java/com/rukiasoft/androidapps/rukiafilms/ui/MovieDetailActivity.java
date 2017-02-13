@@ -2,11 +2,13 @@ package com.rukiasoft.androidapps.rukiafilms.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.rukiasoft.androidapps.rukiafilms.R;
 import com.rukiasoft.androidapps.rukiafilms.model.MovieData;
 import com.rukiasoft.androidapps.rukiafilms.model.MovieParcelable;
+import com.rukiasoft.androidapps.rukiafilms.utils.LogHelper;
 import com.rukiasoft.androidapps.rukiafilms.utils.RukiaFilmsConstants;
 
 
@@ -19,10 +21,12 @@ public class MovieDetailActivity extends ToolbarAndProgressActivity {
 
 
     private Unbinder unbinder;
+    private final String TAG = LogHelper.makeLogTag(this.getClass());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "on create");
         setContentView(R.layout.activity_movie_detail);
         unbinder = ButterKnife.bind(this);
         MovieParcelable movieParcelable = null;
@@ -45,18 +49,22 @@ public class MovieDetailActivity extends ToolbarAndProgressActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "ondestroy");
         unbinder.unbind();
     }
 
     @Override
     public void onResume() {
 
+        Log.d(TAG, "onresume");
         super.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(TAG, "onpause");
+
     }
 
     @Override
