@@ -1,5 +1,6 @@
 package com.rukiasoft.androidapps.rukiafilms.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -265,7 +267,7 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
         adapter.setHasStableIds(true);
         adapter.setOnCardClickListener(this);
         mRecyclerView.setAdapter(adapter);
-        int columnCount = getResources().getInteger(R.integer.list_column_count);
+        int columnCount = calculateNoOfColumns(getActivity().getApplicationContext());
         GridLayoutManager gridLayoutManager =
                 new GridLayoutManager(getContext(), columnCount);
 
@@ -286,6 +288,14 @@ public class MovieListActivityFragment extends Fragment implements MovieListRecy
 
 
     }
+
+    public static int calculateNoOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int noOfColumns = (int) (dpWidth / 180);
+        return noOfColumns;
+    }
+
 
     private  void addData(List<MovieData> items){
         Log.d(TAG, "adddata");
